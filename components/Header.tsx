@@ -74,10 +74,10 @@ const Header: React.FC = () => {
             <div className="right">
                 <p>Validating session ...</p>
                 <style jsx>{`
-          .right {
-            margin-left: auto;
-          }
-        `}</style>
+                  .right {
+                    margin-left: auto;
+                  }
+                `}</style>
             </div>
         );
     }
@@ -125,24 +125,24 @@ const Header: React.FC = () => {
                     <a data-active={isActive('/drafts')}>My drafts</a>
                 </Link>
                 <style jsx>{`
-          .bold {
-            font-weight: bold;
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active='true'] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
+                  .bold {
+                    font-weight: bold;
+                  }
+        
+                  a {
+                    text-decoration: none;
+                    color: var(--geist-foreground);
+                    display: inline-block;
+                  }
+        
+                  .left a[data-active='true'] {
+                    color: gray;
+                  }
+        
+                  a + a {
+                    margin-left: 1rem;
+                  }
+                `}</style>
             </div>
         );
         right = (
@@ -159,36 +159,36 @@ const Header: React.FC = () => {
                     <a>Log out</a>
                 </button>
                 <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          p {
-            display: inline-block;
-            font-size: 13px;
-            padding-right: 1rem;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          .right a {
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-
-          button {
-            border: none;
-          }
-        `}</style>
+                  a {
+                    text-decoration: none;
+                    color: var(--geist-foreground);
+                    display: inline-block;
+                  }
+        
+                  p {
+                    display: inline-block;
+                    font-size: 13px;
+                    padding-right: 1rem;
+                  }
+        
+                  a + a {
+                    margin-left: 1rem;
+                  }
+        
+                  .right {
+                    margin-left: auto;
+                  }
+        
+                  .right a {
+                    border: 1px solid var(--geist-foreground);
+                    padding: 0.5rem 1rem;
+                    border-radius: 3px;
+                  }
+        
+                  button {
+                    border: none;
+                  }
+                `}</style>
             </div>
         );
     }
@@ -198,12 +198,12 @@ const Header: React.FC = () => {
             {left}
             {right}
             <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
+                nav {
+                  display: flex;
+                  padding: 2rem;
+                  align-items: center;
+                }
+            `}</style>
         </nav>
     );
 };
