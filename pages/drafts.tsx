@@ -4,7 +4,6 @@ import { useSession, getSession } from 'next-auth/react';
 import Layout from '../components/Layout';
 import Post, { PostProps } from '../components/Post';
 import prisma from '../lib/prisma';
-import {TailSpin} from "react-loader-spinner";
 import Link from "next/link";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

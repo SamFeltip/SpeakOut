@@ -6,7 +6,6 @@ import Post, {PostProps} from "../components/Post";
 
 import {TailSpin} from "react-loader-spinner";
 import prisma from "../lib/prisma";
-import post from "../components/Post";
 
 export async function getServerSideProps(context) {
     console.log('this is server side props')
@@ -36,7 +35,7 @@ const Draft: React.FC<{ replyPost: PostProps}> = ({replyPost}) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(false);
-    const { data: session, status } = useSession();
+    const { status } = useSession();
 
     const submitData = async (e: React.SyntheticEvent, published: boolean = false, replyPostId: string = "") => {
         e.preventDefault();

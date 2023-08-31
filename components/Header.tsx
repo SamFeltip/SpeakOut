@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -69,7 +68,7 @@ const UserMenu = ({ session }) => {
 
 const Header: React.FC = () => {
 
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
 
     let feed = (
 
