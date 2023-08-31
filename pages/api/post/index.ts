@@ -1,22 +1,34 @@
-import { getSession } from 'next-auth/react';
+// import { getSession } from 'next-auth/react'
+
+import { authOptions } from '../auth/[...nextauth]'
+import { getServerSession } from "next-auth/next"
+
 import prisma from '../../../lib/prisma';
+
 
 // POST /api/post
 // Required fields in body: title
 // Optional fields in body: content
 export default async function handle(req, res) {
-    const { title, content } = req.body;
+    // const session = await getSession({req});
+    const session = await getServerSession(req, res, authOptions)
 
-    console.log('post index, creating post')
+    const { title, content, published, replyPostId } = req.body;
 
-    const session = await getSession({ req });
-    const result = await prisma.post.create({
-        data: {
-            title: title,
-            content: content,
-            author: { connect: { email: session?.user?.email } },
-        },
-    });
+    if (session) {
+        const result = await prisma.post.create({
+            data: {
+                title,
+                content,
+                published,
+                replyPostId,
+                author: { connect: { email: session?.user?.email } },
 
-    res.json(result);
+
+            },
+        });
+        res.json(result);
+    } else {
+        res.status(401).send('Unauthorized');
+    }
 }

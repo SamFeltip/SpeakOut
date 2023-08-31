@@ -14,12 +14,13 @@ datasource db {
 // schema.prisma
 
 model Post {
-id        String  @id @default(cuid())
-title     String
-content   String?
-published Boolean @default(false)
-author    User?@relation(fields:[authorId], references:[id])
-authorId  String?
+id          String  @id @default(cuid())
+title       String
+content     String?
+published   Boolean @default(false)
+author      User?   @relation(fields:[authorId], references:[id])
+authorId    String?
+replyPostId String  @map("post_id")
 }
 
 model Account {
@@ -54,7 +55,7 @@ user         User     @relation(fields:[userId], references:[id], onDelete: Casc
 model User {
 id            String    @id @default(cuid())
 name          String?
-email         String?@unique
+email         String?   @unique
 emailVerified DateTime?
 image         String?
 posts         Post[]

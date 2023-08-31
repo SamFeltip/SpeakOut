@@ -4,6 +4,8 @@ import { useSession, getSession } from 'next-auth/react';
 import Layout from '../components/Layout';
 import Post, { PostProps } from '../components/Post';
 import prisma from '../lib/prisma';
+import {TailSpin} from "react-loader-spinner";
+import Link from "next/link";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const session = await getSession({ req });
@@ -20,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         },
         include: {
             author: {
-                select: { name: true },
+                select: { name: true, image: true },
             },
         },
     });
@@ -34,45 +36,59 @@ type Props = {
 };
 
 const Drafts: React.FC<Props> = (props) => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
 
     if (!session) {
         return (
             <Layout>
                 <h1>My Drafts</h1>
-                <div>You need to be authenticated to view this page.</div>
+
+                <div>
+                    authenticating session...
+                </div>
             </Layout>
         );
     }
 
-    return (
-        <Layout>
-            <div className="page">
-                <h1>My Drafts</h1>
-                <main>
-                    {props.drafts.map((post) => (
-                        <div key={post.id} className="post">
-                            <Post post={post} />
-                        </div>
-                    ))}
-                </main>
-            </div>
-            <style jsx>{`
-                .post {
-                  background: var(--geist-background);
-                  transition: box-shadow 0.1s ease-in;
-                }
-        
-                .post:hover {
-                  box-shadow: 1px 1px 3px #aaa;
-                }
-        
-                .post + .post {
-                  margin-top: 2rem;
-                }
+    if (status === 'loading'){
+        return (
+            <Layout>
+                <div>
+                    loading pages...
+                </div>
+
+            </Layout>
+        )
+    }
+    if (session){
+
+        return (
+            <Layout>
+                <div className="page">
+
+                    <div className="flex justify-between">
+
+                        <h1>My Drafts</h1>
+
+                        <Link href="/create" className={'border-2 py-1.5 px-3 rounded-xl border-black cursor-pointer'}>
+                            New post
+                        </Link>
+                    </div>
+                    <main>
+                        {props.drafts.map((post) => (
+                            <div key={post.id} className="bg-white mt-[2rem] hover:cursor-pointer">
+                                <Post post={post} />
+                            </div>
+                        ))}
+                    </main>
+                </div>
+                <style jsx>{`
+                
             `}</style>
-        </Layout>
-    );
+            </Layout>
+        );
+    }
+
 };
 
 export default Drafts;

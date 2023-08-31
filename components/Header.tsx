@@ -1,209 +1,112 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleUser, faBullhorn } from '@fortawesome/free-solid-svg-icons'
+
+
+const UserMenu = ({ session }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleToggle = () => setIsOpen(!isOpen);
+
+    let userIcon = (<FontAwesomeIcon icon={faCircleUser} size={"3x"} fixedWidth/>)
+    let dropDownMenu = (
+        <div className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <Link href="/api/auth/signin">
+                Log in
+            </Link>
+        </div>
+    )
+
+    if(session){
+        userIcon = (<img
+            src={session?.user?.image ?? ""}
+            alt={session?.user?.name ?? ""}
+            className={"rounded-full h-[48px] w-[48px]"}
+            referrerPolicy={"no-referrer"}
+        />)
+
+        dropDownMenu = (
+            <>
+                <div className="px-4 py-2 text-sm text-gray-500 italic">
+                    {session?.user?.name ?? ""}
+                </div>
+
+                <Link
+                    href="/drafts"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
+                    My drafts
+                </Link>
+
+                <button
+                    onClick={() => signOut()}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                >
+                    Sign out
+                </button>
+            </>
+        )
+    }
+    return (
+        <div className="">
+            <button onClick={handleToggle} className="focus:outline-none">
+                {userIcon}
+            </button>
+            { isOpen && (
+                <div className="absolute right-[2rem] mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
+                    {dropDownMenu}
+                </div>
+            )}
+        </div>
+    );
+}
+
+
+
 const Header: React.FC = () => {
-    const router = useRouter();
-    const isActive: (pathname: string) => boolean = (pathname) =>
-        router.pathname === pathname;
 
     const { data: session, status } = useSession();
 
+    let feed = (
+
+        <Link href="/" className={'py-1.5 px-3 font-bold border-black border-2 rounded'}>
+            Speak out
+            <FontAwesomeIcon icon={faBullhorn} className={'ml-2'}/>
+        </Link>
+
+
+    )
+
+    let right = (
+        <div className="flex items-center gap-5">
+            <UserMenu session={session}/>
+        </div>
+    );
     let left = (
-        <div className="left">
-            <Link legacyBehavior href="/">
-                <a className="bold" data-active={isActive('/')}>
-                    Feed
-                </a>
-            </Link>
-            <style jsx>{`
-                .bold {
-                  font-weight: bold;
-                }
-        
-                a {
-                  text-decoration: none;
-                  color: var(--geist-foreground);
-                  display: inline-block;
-                }
-        
-                .left a[data-active='true'] {
-                  color: gray;
-                }
-        
-                a + a {
-                  margin-left: 1rem;
-                }
-            `}</style>
+        <div className="flex items-center gap-2">
+            {feed}
         </div>
     );
 
-    let right = null;
-
-    if (status === 'loading') {
+    if (session){
         left = (
-            <div className="left">
-                <Link legacyBehavior href="/">
-                    <a className="bold" data-active={isActive('/')}>
-                        Feed
-                    </a>
+            <div className="flex items-center gap-2">
+                {feed}
+                <Link href="/create" className={'italic cursor-pointer'}>
+                    What's on your mind?
                 </Link>
-                <style jsx>{`
-                  .bold {
-                    font-weight: bold;
-                  }
-        
-                  a {
-                    text-decoration: none;
-                    color: var(--geist-foreground);
-                    display: inline-block;
-                  }
-        
-                  .left a[data-active='true'] {
-                    color: gray;
-                  }
-        
-                  a + a {
-                    margin-left: 1rem;
-                  }
-                `}</style>
-            </div>
-        );
-        right = (
-            <div className="right">
-                <p>Validating session ...</p>
-                <style jsx>{`
-                  .right {
-                    margin-left: auto;
-                  }
-                `}</style>
-            </div>
-        );
-    }
-
-    if (!session) {
-        right = (
-            <div className="right">
-                <Link legacyBehavior href="/api/auth/signin">
-                    <a data-active={isActive('/signup')}>Log in</a>
-                </Link>
-                <style jsx>{`
-                  a {
-                    text-decoration: none;
-                    color: var(--geist-foreground);
-                    display: inline-block;
-                  }
-        
-                  a + a {
-                    margin-left: 1rem;
-                  }
-        
-                  .right {
-                    margin-left: auto;
-                  }
-        
-                  .right a {
-                    border: 1px solid var(--geist-foreground);
-                    padding: 0.5rem 1rem;
-                    border-radius: 3px;
-                  }
-                `}</style>
-            </div>
-        );
-    }
-
-    if (session) {
-        left = (
-            <div className="left">
-                <Link legacyBehavior href="/">
-                    <a className="bold" data-active={isActive('/')}>
-                        Feed
-                    </a>
-                </Link>
-                <Link legacyBehavior href="/drafts">
-                    <a data-active={isActive('/drafts')}>My drafts</a>
-                </Link>
-                <style jsx>{`
-                  .bold {
-                    font-weight: bold;
-                  }
-        
-                  a {
-                    text-decoration: none;
-                    color: var(--geist-foreground);
-                    display: inline-block;
-                  }
-        
-                  .left a[data-active='true'] {
-                    color: gray;
-                  }
-        
-                  a + a {
-                    margin-left: 1rem;
-                  }
-                `}</style>
-            </div>
-        );
-        right = (
-            <div className="right">
-                <p>
-                    {session.user.name} ({session.user.email})
-                </p>
-                <Link legacyBehavior href="/create">
-                    <button>
-                        <a>New post</a>
-                    </button>
-                </Link>
-                <button onClick={() => signOut()}>
-                    <a>Log out</a>
-                </button>
-                <style jsx>{`
-                  a {
-                    text-decoration: none;
-                    color: var(--geist-foreground);
-                    display: inline-block;
-                  }
-        
-                  p {
-                    display: inline-block;
-                    font-size: 13px;
-                    padding-right: 1rem;
-                  }
-        
-                  a + a {
-                    margin-left: 1rem;
-                  }
-        
-                  .right {
-                    margin-left: auto;
-                  }
-        
-                  .right a {
-                    border: 1px solid var(--geist-foreground);
-                    padding: 0.5rem 1rem;
-                    border-radius: 3px;
-                  }
-        
-                  button {
-                    border: none;
-                  }
-                `}</style>
             </div>
         );
     }
 
     return (
-        <nav>
+        <nav className={'w-full flex items-center justify-between p-[2rem]'}>
             {left}
             {right}
-            <style jsx>{`
-                nav {
-                  display: flex;
-                  padding: 2rem;
-                  align-items: center;
-                }
-            `}</style>
         </nav>
     );
 };

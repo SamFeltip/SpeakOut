@@ -3,15 +3,29 @@ import { GetServerSideProps } from 'next';
 import ReactMarkdown from 'react-markdown';
 import Router from 'next/router';
 import Layout from '../../components/Layout';
+
+import Post from "../../components/Post"
 import { PostProps } from '../../components/Post';
 import { useSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
 
 async function deletePost(id: string): Promise<void> {
-  await fetch(`/api/post/${id}`, {
-    method: 'DELETE',
+
+  if(confirm('are you sure you want to delete this post?')){
+
+    await fetch(`/api/post/${id}`, {
+      method: 'DELETE',
+    });
+    Router.push('/');
+  }
+
+}
+
+async function publishPost(id: string): Promise<void> {
+  await fetch(`/api/publish/${id}`, {
+    method: 'PUT',
   });
-  Router.push('/');
+  await Router.push('/');
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -22,66 +36,82 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     include: {
       author: {
         select: { name: true, email: true },
-      },
+      }
     },
   });
+
+  const replyPosts = await prisma.post.findMany({
+    where: {
+      replyPostId: String(post.id)
+    },
+    include: {
+      author: {
+        select: { name: true, email: true, image: true },
+      }
+    }
+  })
+
   return {
-    props: post,
+    props: {post, replyPosts},
+
   };
 };
 
-async function publishPost(id: string): Promise<void> {
-  await fetch(`/api/publish/${id}`, {
-    method: 'PUT',
-  });
-  await Router.push('/');
+type Props = {
+  post: PostProps,
+  replyPosts: PostProps[]
 }
 
-const Post: React.FC<PostProps> = (props) => {
+const ShowPost: React.FC<Props> = ({post, replyPosts}) => {
   const { data: session, status } = useSession();
   if (status === 'loading') {
     return <div>Authenticating ...</div>;
   }
+
   const userHasValidSession = Boolean(session);
-  const postBelongsToUser = session?.user?.email === props.author?.email;
-  let title = props.title;
-  if (!props.published) {
+  const postBelongsToUser = session?.user?.email === post.author?.email;
+  let title = post.title;
+
+  if (!post.published) {
     title = `${title} (Draft)`;
   }
 
   return (
       <Layout>
         <div>
-          <h2>{title}</h2>
-          <p>By {props?.author?.name || 'Unknown author'}</p>
-          <ReactMarkdown children={props.content} />
-          {!props.published && userHasValidSession && postBelongsToUser && (
-              <button onClick={() => publishPost(props.id)}>Publish</button>
+          <h2 className={'text-3xl font-extrabold'}>{title}</h2>
+
+          <p>By {post?.author?.name || 'Unknown author'}</p>
+
+          <ReactMarkdown children={post.content} className={'my-2 '}/>
+
+          {!post.published && userHasValidSession && postBelongsToUser && (
+              <div className="w-full text-right">
+                  <button className={' border-2 my-2 py-1.5 px-3 rounded-xl border-black'} onClick={() => publishPost(post.id)}>Publish</button>
+              </div>
+          )}
+
+          {userHasValidSession && postBelongsToUser && (
+              <div className="w-full text-right">
+                <button className={'text-red-600 border-2 my-2 py-1.5 px-3 rounded-xl border-red-600'} onClick={() => deletePost(post.id)}>Delete</button>
+              </div>
           )}
         </div>
-        <style jsx>{`
-          .page {
-            background: var(--geist-background);
-            padding: 2rem;
-          }
 
-          .actions {
-            margin-top: 2rem;
-          }
+        <div>
+          <div>
+            {replyPosts.length} replies
+          </div>
+          {replyPosts.map((post) => (
+              <div key={post.id}>
+                <Post post={post}/>
+                <hr/>
+              </div>
+          ))}
+        </div>
 
-          button {
-            background: #ececec;
-            border: 0;
-            border-radius: 0.125rem;
-            padding: 1rem 2rem;
-          }
-
-          button + button {
-            margin-left: 1rem;
-          }
-        `}</style>
       </Layout>
   );
 };
 
-export default Post;
+export default ShowPost;
