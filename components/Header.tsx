@@ -4,6 +4,7 @@ import { signOut, useSession } from 'next-auth/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleUser, faBullhorn } from '@fortawesome/free-solid-svg-icons'
+import DropDown from "./DropDown";
 
 
 const UserMenu = ({ session }) => {
@@ -51,16 +52,7 @@ const UserMenu = ({ session }) => {
         )
     }
     return (
-        <div className="">
-            <button onClick={handleToggle} className="focus:outline-none">
-                {userIcon}
-            </button>
-            { isOpen && (
-                <div className="absolute right-[2rem] mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
-                    {dropDownMenu}
-                </div>
-            )}
-        </div>
+        <DropDown dropDownMenu={dropDownMenu} dropDownButton={userIcon}/>
     );
 }
 

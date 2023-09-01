@@ -1,64 +1,81 @@
 import React from "react";
 import Router from "next/router";
 import ReactMarkdown from "react-markdown";
+import prisma from "../lib/prisma";
+import {GetServerSideProps} from "next";
+import {PostFooter} from "./PostFooter";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faComment} from '@fortawesome/free-regular-svg-icons'
-import Link from "next/link";
+export type ReplyPostProps= {
+	id: string;
+	title: string;
+	author: {
+		name: string;
+		email: string;
+		image: string;
+	} | null;
+	content: string;
+	published: boolean;
+}
 
 export type PostProps = {
-    id: string;
-    title: string;
-    author: {
-        name: string;
-        email: string;
-        image: string;
-    } | null;
-    content: string;
-    published: boolean;
-    replyPostId: string;
+	id: string;
+	title: string;
+	author: {
+		name: string;
+		email: string;
+		image: string;
+	} | null;
+	content: string;
+	published: boolean;
+
+	replyPosts: ReplyPostProps[];
 };
 
-const Post: React.FC<{ post: PostProps}> = ({post}) => {
-    const authorName = post.author ? post.author.name : "Unknown author";
 
-    let isReply = post.replyPostId !== ""
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+	const replyPosts = await prisma.post.findMany({
+		where: {
+			replyPostId: String(params?.id)
+		},
+		include: {
+			author: {
+				select: { name: true, email: true, image: true },
+			}
+		}
+	})
 
-    console.log("reply post ", post.replyPostId)
+	return {
+		props: {replyPosts},
+	};
+};
 
-    let menuBar = !isReply && (
-        <Link
-            href={{pathname: '/create', query: {replyPostId: post.id}}}
-            className={'text-gray-500 pb-5'}
-        >
-            Reply
-            <FontAwesomeIcon className={'pl-1'} icon={faComment} size={"sm"} fixedWidth/>
-        </Link>
-    )
-    return (
-        <div className={`${isReply ? 'p-[0.5rem] border-gray-300 border-[0.15rem] rounded' : ''}`}>
-            <div
-                className={`flex flex-row items-center gap-2 rounded bg-white py-3 hover:cursor-pointer `}
-                onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}
-            >
-                <img
-                    src={post.author?.image ?? ""}
-                    alt={post.author?.name ?? ""}
-                    className={"rounded-full h-[48px] w-[48px]"}
-                    referrerPolicy={"no-referrer"}
-                />
+const Post: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
+	const authorName = post.author ? post.author.name : "Unknown author";
 
-                <div>
-                    <h2 className={'font-bold'}>{post.title}</h2>
-                    <small>By {authorName}</small>
-                    <ReactMarkdown children={post.content} />
-                </div>
+	return (
+		<div className={`pb-2`}>
+			<div
+				className={`flex flex-row items-center gap-2 rounded bg-white py-3 hover:cursor-pointer `}
+				onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}
+			>
+				<img
+					src={post.author?.image ?? ""}
+					alt={post.author?.name ?? ""}
+					className={"rounded-full h-[48px] w-[48px]"}
+					referrerPolicy={"no-referrer"}
+				/>
 
-            </div>
+				<div>
+					<h2 className={'font-bold'}>{post.title}</h2>
+					<small>By {authorName}</small>
+					<ReactMarkdown children={post.content} />
+				</div>
 
-            {menuBar}
-        </div>
-    );
+			</div>
+
+			<PostFooter post={post}/>
+		</div>
+	);
 };
 
 export default Post;
