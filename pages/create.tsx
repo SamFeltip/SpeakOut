@@ -9,8 +9,6 @@ import prisma from "../lib/prisma";
 import {PostProps} from "../types/PostProps";
 
 export async function getServerSideProps(context) {
-    console.log('this is server side props')
-    console.log(context.query.replyPostId); // return { movieId: 'Mortal Kombat' }
 
     if(context.query.replyPostId) {
 
