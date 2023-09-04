@@ -17,12 +17,28 @@ export default async function handle(req, res) {
 		}
 
 		try {
+
+			const is_liked = await prisma.post.count({
+				where: {
+					id: postId,
+					likedBy: {
+						some: {
+							email: session?.user?.email
+						}
+					}
+				}
+			}) > 0
+
 			const post = await prisma.post.update({
 				where: { id: postId },
 				data: {
-					likedBy: { connect: { email: session?.user?.email } },
+					likedBy:
+						is_liked
+							? { disconnect: { email: session?.user?.email } }
+							: { connect: 	{ email: session?.user?.email } },
 				},
 			});
+
 			res.status(200).json(post);
 
 		} catch (error) {

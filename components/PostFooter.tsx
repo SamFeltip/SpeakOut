@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons";
 import {faHeart as faHeartFull} from "@fortawesome/free-solid-svg-icons";
 import {PostProps, ReplyPostProps} from "../types/PostProps";
-import Router, {useRouter} from "next/router";
+import {useRouter} from "next/router";
 import {useSession} from "next-auth/react";
 
 
@@ -12,8 +12,9 @@ import {useSession} from "next-auth/react";
 export const PostFooter: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
     const router = useRouter()
 
-    const { data: session, status } = useSession();
-    let likeIcon = post?.likedBy.some(user => user.email === session?.user?.email) ? faHeartFull : faHeartRegular
+    const { data: session } = useSession();
+
+    let likeIcon = post?.likedBy?.some(user => user.email === session?.user?.email) ? faHeartFull : faHeartRegular
 
     const refreshData = () => {
         router.replace(router.asPath)
@@ -39,7 +40,8 @@ export const PostFooter: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}
                 onClick={likePost}
                 className={'text-gray-500'}
             >
-                {post.likedBy.length}
+                {post?.likedBy?.length || "0"}
+
                 <FontAwesomeIcon className={'pl-1'} icon={likeIcon} size={"sm"} fixedWidth/>
 
             </button>

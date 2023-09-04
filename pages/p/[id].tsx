@@ -137,6 +137,7 @@ const ShowPost: React.FC<{ post: PostProps } > = ({post}) => {
 			</div>
 
 			<div>
+
 				{post?.replyPosts.map((replyPost) => (
 					<div key={replyPost.id}>
 						<hr/>
