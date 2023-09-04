@@ -4,35 +4,11 @@ import ReactMarkdown from "react-markdown";
 import prisma from "../lib/prisma";
 import {GetServerSideProps} from "next";
 import {PostFooter} from "./PostFooter";
-
-export type ReplyPostProps= {
-	id: string;
-	title: string;
-	author: {
-		name: string;
-		email: string;
-		image: string;
-	} | null;
-	content: string;
-	published: boolean;
-}
-
-export type PostProps = {
-	id: string;
-	title: string;
-	author: {
-		name: string;
-		email: string;
-		image: string;
-	} | null;
-	content: string;
-	published: boolean;
-
-	replyPosts: ReplyPostProps[];
-};
+import {PostProps, ReplyPostProps} from "../types/PostProps";
 
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+
 	const replyPosts = await prisma.post.findMany({
 		where: {
 			replyPostId: String(params?.id)

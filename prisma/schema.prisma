@@ -13,18 +13,17 @@ datasource db {
 
 // schema.prisma
 
-model Post {
-  id          String  @id @default(cuid())
-  title       String
-  content     String?
-  published   Boolean @default(false)
-  author      User?   @relation(fields:[authorId], references:[id])
-  authorId    String?
-  replyPostId String? @map("post_id")
-  replyPost   Post?   @relation(name: "PostToPost", fields: [replyPostId], references: [id])
-  replyPosts  Post[]  @relation(name: "PostToPost")
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  posts         Post[]
+  accounts      Account[]
+  sessions      Session[]
+  likedPosts    Post[]    @relation(name: "LikedPosts")
 }
-
 
 
 model Account {
@@ -48,23 +47,28 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Post {
+  id          String  @id @default(cuid())
+  title       String
+  content     String?
+  published   Boolean @default(false)
+  author      User?   @relation(fields:[authorId], references:[id])
+  authorId    String?
+  replyPostId String? @map("post_id")
+  replyPost   Post?   @relation(name: "PostToPost", fields: [replyPostId], references: [id]) //post this post replies to
+  replyPosts  Post[]  @relation(name: "PostToPost") //all posts which reply to this one
+
+  likedBy     User[]  @relation(name: "LikedPosts")
+}
+
+
+
 model Session {
 id           String   @id @default(cuid())
 sessionToken String   @unique@map("session_token")
 userId       String   @map("user_id")
 expires      DateTime
 user         User     @relation(fields:[userId], references:[id], onDelete: Cascade)
-}
-
-model User {
-id            String    @id @default(cuid())
-name          String?
-email         String?   @unique
-emailVerified DateTime?
-image         String?
-posts         Post[]
-accounts      Account[]
-sessions      Session[]
 }
 
 model VerificationToken {
