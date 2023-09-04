@@ -5,13 +5,13 @@ import Router from 'next/router';
 import Layout from '../../components/Layout';
 
 import Post from "../../components/Post"
-import { PostProps } from '../../components/Post';
 import { useSession } from 'next-auth/react';
 import prisma from '../../lib/prisma';
 import {PostFooter} from "../../components/PostFooter";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEllipsisV, faTrash, faBullhorn} from "@fortawesome/free-solid-svg-icons";
 import DropDown from "../../components/DropDown";
+import {PostProps} from "../../types/PostProps";
 
 async function deletePost(id: string): Promise<void> {
 
@@ -22,7 +22,6 @@ async function deletePost(id: string): Promise<void> {
 		});
 		await Router.push('/');
 	}
-
 }
 
 async function publishPost(id: string): Promise<void> {
@@ -47,6 +46,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 						select: {name: true, email: true, image: true},
 					},
 				},
+			},
+			likedBy: {
+				select: {email: true}
 			}
 		},
 	});

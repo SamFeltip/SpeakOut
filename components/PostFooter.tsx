@@ -2,9 +2,28 @@ import React from "react";
 import Link from "next/link";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons";
-import {PostProps, ReplyPostProps} from "./Post";
+import {faHeart as faHeartFull} from "@fortawesome/free-solid-svg-icons";
+import {PostProps, ReplyPostProps} from "../types/PostProps";
+import Router, {useRouter} from "next/router";
+import {useSession} from "next-auth/react";
+
+
 
 export const PostFooter: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
+    const router = useRouter()
+
+    const { data: session, status } = useSession();
+    let likeIcon = post?.likedBy.some(user => user.email === session?.user?.email) ? faHeartFull : faHeartRegular
+
+    const refreshData = () => {
+        router.replace(router.asPath)
+    }
+
+    async function likePost(): Promise<void> {
+        await fetch(`/api/like/${post.id}`, {
+            method: 'PUT',
+        }).then(refreshData);
+    }
 
     return (
         <div className={'flex gap-3'}>
@@ -16,14 +35,14 @@ export const PostFooter: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}
                 <FontAwesomeIcon className={'pl-1'} icon={faComment} size={"sm"} fixedWidth/>
             </Link>
 
-            <Link
-                href={{pathname: '/create', query: {replyPostId: post.id}}}
+            <button
+                onClick={likePost}
                 className={'text-gray-500'}
             >
-                Like
-                <FontAwesomeIcon className={'pl-1'} icon={faHeartRegular} size={"sm"} fixedWidth/>
+                {post.likedBy.length}
+                <FontAwesomeIcon className={'pl-1'} icon={likeIcon} size={"sm"} fixedWidth/>
 
-            </Link>
+            </button>
         </div>
 
     )

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import Router from 'next/router';
 import {useSession} from "next-auth/react";
-import Post, {PostProps} from "../components/Post";
+import Post from "../components/Post";
 
 import {TailSpin} from "react-loader-spinner";
 import prisma from "../lib/prisma";
+import {PostProps} from "../types/PostProps";
 
 export async function getServerSideProps(context) {
     console.log('this is server side props')
