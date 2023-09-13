@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import prisma from "../lib/prisma";
 import {GetServerSideProps} from "next";
 import {PostFooter} from "./PostFooter";
-import {PostProps, ReplyPostProps} from "../types/PostProps";
+import {PostProps} from "../types/PostProps";
 
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 	};
 };
 
-const Post: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
+const Post: React.FC<{ post: PostProps }> = ({post}) => {
 	const authorName = post.author ? post.author.name : "Unknown author";
 
 	return (
