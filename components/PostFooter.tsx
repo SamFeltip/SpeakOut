@@ -1,52 +1,56 @@
-import React from "react";
+import React, {useState} from "react";
 import Link from "next/link";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment, faHeart as faHeartRegular} from "@fortawesome/free-regular-svg-icons";
 import {faHeart as faHeartFull} from "@fortawesome/free-solid-svg-icons";
-import {PostProps, ReplyPostProps} from "../types/PostProps";
-import {useRouter} from "next/router";
+import {PostProps} from "../types/PostProps";
 import {useSession} from "next-auth/react";
 
 
 
-export const PostFooter: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
-    const router = useRouter()
+export const PostFooter: React.FC<{ post: PostProps}> = ({post}) => {
+	const { data: session } = useSession();
+	const [likedBy, setLikedBy] = useState(post.likedBy)
 
-    const { data: session } = useSession();
+	let currentUserLikesPost = likedBy?.some(user => user.email === session?.user?.email)
+	let likeIcon = currentUserLikesPost ? faHeartFull : faHeartRegular
 
-    let likeIcon = post?.likedBy?.some(user => user.email === session?.user?.email) ? faHeartFull : faHeartRegular
+	const handleLike = async () => {
+		console.log('this is being liked')
+		try {
+			const response = await fetch(`/api/like/${post.id}`, {
+				method: 'PUT'
+			});
+			if (response.ok) {
+				const newPost = await response.json();
+				setLikedBy(newPost.likedBy)
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-    const refreshData = () => {
-        router.replace(router.asPath)
-    }
+	return (
+		<div className={'flex gap-3'}>
+			<Link
+				href={{pathname: '/create', query: {replyPostId: post.id}}}
+				className={'text-gray-500'}
+			>
+				Reply
+				<FontAwesomeIcon className={'pl-1'} icon={faComment} size={"sm"} fixedWidth/>
+			</Link>
 
-    async function likePost(): Promise<void> {
-        await fetch(`/api/like/${post.id}`, {
-            method: 'PUT',
-        }).then(refreshData);
-    }
+			<button
+				onClick={handleLike}
+				className={'text-gray-500'}
+			>
+				{likedBy?.length || "0"}
 
-    return (
-        <div className={'flex gap-3'}>
-            <Link
-                href={{pathname: '/create', query: {replyPostId: post.id}}}
-                className={'text-gray-500'}
-            >
-                Reply
-                <FontAwesomeIcon className={'pl-1'} icon={faComment} size={"sm"} fixedWidth/>
-            </Link>
+				<FontAwesomeIcon className={`pl-1 ${currentUserLikesPost ? 'text-red-600' : ''}`} icon={likeIcon} size={"sm"} fixedWidth/>
 
-            <button
-                onClick={likePost}
-                className={'text-gray-500'}
-            >
-                {post?.likedBy?.length || "0"}
+			</button>
+		</div>
 
-                <FontAwesomeIcon className={'pl-1'} icon={likeIcon} size={"sm"} fixedWidth/>
-
-            </button>
-        </div>
-
-    )
+	)
 
 }

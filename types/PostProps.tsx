@@ -8,6 +8,10 @@ export type ReplyPostProps = {
 	} | null;
 	content: string;
 	published: boolean;
+	replyPostId: string;
+	replyPosts: {
+		_count: number;
+	}
 	likedBy: {
 		email: string;
 	}[];
@@ -23,7 +27,8 @@ export type PostProps = {
 	} | null;
 	content: string;
 	published: boolean;
-	replyPosts: ReplyPostProps[];
+	replyPostId: string;
+	replyPosts: PostProps[] | null ;
 	likedBy: {
 		email: string;
 	}[];

@@ -9,7 +9,7 @@ export default async function handle(req, res) {
 	const postId = req.query.id;
 
 	if (Boolean(session)){
-
+		console.log('session found, retrieving email and liking post')
 		const userEmail = session?.user?.email;
 
 		if (!userEmail) {
@@ -17,7 +17,7 @@ export default async function handle(req, res) {
 		}
 
 		try {
-
+			console.log('checking if post is already liked...')
 			const is_liked = await prisma.post.count({
 				where: {
 					id: postId,
@@ -28,7 +28,8 @@ export default async function handle(req, res) {
 					}
 				}
 			}) > 0
-
+			console.log('result: ', is_liked)
+			console.log('updating post accordingly')
 			const post = await prisma.post.update({
 				where: { id: postId },
 				data: {
@@ -37,8 +38,12 @@ export default async function handle(req, res) {
 							? { disconnect: { email: session?.user?.email } }
 							: { connect: 	{ email: session?.user?.email } },
 				},
+				include: {
+					likedBy: true,
+				},
 			});
 
+			console.log('post changed. responding with new post: ', JSON.stringify(post))
 			res.status(200).json(post);
 
 		} catch (error) {

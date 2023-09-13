@@ -14,9 +14,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 			replyPostId: String(params?.id)
 		},
 		include: {
-			author: {
-				select: { name: true, email: true, image: true },
-			}
+			author: true,
+			likedBy: true,
+			replyPosts: true
 		}
 	})
 
@@ -29,7 +29,7 @@ const Post: React.FC<{ post: PostProps | ReplyPostProps}> = ({post}) => {
 	const authorName = post.author ? post.author.name : "Unknown author";
 
 	return (
-		<div className={`pb-2`}>
+		<div className={"pb-2 " + (post?.replyPostId && " pl-5")}>
 			<div
 				className={`flex flex-row items-center gap-2 rounded bg-white py-3 hover:cursor-pointer `}
 				onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}

@@ -37,20 +37,15 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 			id: String(params?.id),
 		},
 		include: {
-			author: {
-				select: { name: true, email: true },
-			},
+			author: true,
+			likedBy: true,
 			replyPosts: {
 				include: {
-					author: {
-						select: {name: true, email: true, image: true},
-					},
-				},
-			},
-			likedBy: {
-				select: {email: true}
+					author: true,
+					likedBy: true
+				}
 			}
-		},
+		}
 	});
 
 	return {
