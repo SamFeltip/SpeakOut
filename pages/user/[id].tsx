@@ -2,13 +2,7 @@ import {GetServerSideProps} from "next";
 import prisma from "../../lib/prisma";
 import React from "react";
 import {useSession} from "next-auth/react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBullhorn, faEllipsisV, faTrash} from "@fortawesome/free-solid-svg-icons";
 import Layout from "../../components/Layout";
-import DropDown from "../../components/DropDown";
-import ReactMarkdown from "react-markdown";
-import {PostFooter} from "../../components/PostFooter";
-import Post from "../../components/Post";
 import {UserProps} from "../../types/UserProps";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
