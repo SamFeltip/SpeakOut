@@ -1,11 +1,12 @@
 import prisma from '../../../lib/prisma';
 import {getServerSession} from "next-auth/next";
 import authOptions from "../auth/[...nextauth]";
+import {Session} from "next-auth";
 
 // PUT /api/publish/:id
 export default async function handle(req, res) {
 
-	const session = await getServerSession(req, res, authOptions)
+	const session: Session = await getServerSession(req, res, authOptions)
 	const postId = req.query.id;
 
 	if (Boolean(session)){

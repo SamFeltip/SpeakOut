@@ -29,7 +29,7 @@ const authOptions = NextAuth({
 		},
 		session: async ({ session, token }) => {
 			if (token) {
-				session.user.id = token.id
+				session.user.id = token.id as string
 			}
 			return session
 		},
