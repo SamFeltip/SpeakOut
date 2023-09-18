@@ -54,30 +54,32 @@ const Header: React.FC = () => {
                 referrerPolicy={"no-referrer"}
             />)
 
-        dropDownMenu = (
-            <>
-                <div className="px-4 py-2 text-sm text-gray-500 italic">
-                    {session?.user?.name ?? ""}
-                </div>
+		dropDownMenu = (
+			<>
+				<Link
+					href={`/user/${session?.user?.id}`}
+					className="px-4 py-2 text-sm text-gray-500 italic">
+					{session?.user?.name ?? ""}
+				</Link>
 
-                <Link
-                    href="/drafts"
-                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex gap-2 items-center"
-                >
-                    <FontAwesomeIcon icon={faEnvelope}/>
-                    My drafts
+				<Link
+					href="/drafts"
+					className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex gap-2 items-center"
+				>
+					<FontAwesomeIcon icon={faEnvelope}/>
+					My drafts
 
-                </Link>
+				</Link>
 
-                <button
-                    onClick={() => signOut()}
-                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex gap-2 items-center"
-                >
-                    <FontAwesomeIcon icon={faArrowRightFromBracket}/>
-                    Sign out
-                </button>
-            </>
-        )
+				<button
+					onClick={() => signOut()}
+					className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex gap-2 items-center"
+				>
+					<FontAwesomeIcon icon={faArrowRightFromBracket}/>
+					Sign out
+				</button>
+			</>
+		);
     }
 
     let right = (

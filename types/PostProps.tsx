@@ -8,7 +8,7 @@ export type PostProps = {
 	} | null;
 	content: string;
 	published: boolean;
-	replyPostId: string;
+	replyPost: PostProps | null ;
 	replyPosts: PostProps[] | null ;
 	likedBy: {
 		email: string;

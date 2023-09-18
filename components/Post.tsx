@@ -29,7 +29,7 @@ const Post: React.FC<{ post: PostProps }> = ({post}) => {
 	const authorName = post.author ? post.author.name : "Unknown author";
 
 	return (
-		<div className={"pb-2 " + (post?.replyPostId && " pl-5")}>
+		<div className={"pb-2" + (post?.replyPost ? " pl-5" : "")}>
 			<div
 				className={`flex flex-row items-center gap-2 rounded bg-white py-3 hover:cursor-pointer `}
 				onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}
