@@ -4,6 +4,7 @@ import authOptions from '../auth/[...nextauth]'
 import { getServerSession } from "next-auth/next"
 
 import prisma from '../../../lib/prisma';
+import {Session} from "next-auth";
 
 
 // POST /api/post
@@ -11,7 +12,7 @@ import prisma from '../../../lib/prisma';
 // Optional fields in body: content
 export default async function handle(req, res) {
 	// const session = await getSession({req});
-	const session = await getServerSession(req, res, authOptions)
+	const session: Session = await getServerSession(req, res, authOptions)
 
 	const { title, content, published, replyPostId } = req.body;
 
