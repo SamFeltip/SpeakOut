@@ -1,11 +1,10 @@
 import {GetServerSideProps} from "next";
 import prisma from "../../lib/prisma";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useSession} from "next-auth/react";
 import Layout from "../../components/Layout";
 import {UserProps} from "../../types/UserProps";
 import Post from "../../components/Post";
-import * as repl from "repl";
 import {PostProps} from "../../types/PostProps";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -39,6 +38,25 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 		props: {user},
 	};
 };
+
+const turnStringIntoRandomColourValue = (input) => {
+
+	console.log(input)
+
+	let hash = 0;
+	for (let i = 0; i < input.length; i++) {
+		hash = input.charCodeAt(i) + ((hash << 5) - hash);
+	}
+	let color = '#';
+	for (let i = 0; i < 3; i++) {
+		let value = (hash >> (i * 8)) & 0xFF;
+		color += ('00' + value.toString(16)).substr(-2);
+	}
+	console.log(color)
+
+	return color;
+}
+
 
 function MyPosts(props: { posts: PostProps[] }) {
 	let {posts} = props;
@@ -87,7 +105,7 @@ function MyLikes(props: { posts: PostProps[] }) {
 }
 
 const ShowUser: React.FC<{ user: UserProps } > = ({user}) => {
-	const { data: session, status } = useSession();
+	const { status } = useSession();
 
 	if (status === 'loading') {
 		return <div>Authenticating ...</div>;
@@ -103,10 +121,12 @@ const ShowUser: React.FC<{ user: UserProps } > = ({user}) => {
 
 	const [displayPosts, setDisplayPosts] = useState(postElement)
 
+	const colourBasedOnId = turnStringIntoRandomColourValue(user.id)
+
 	return (
 		<Layout>
 			{/*banner image*/}
-			<div className={'left-0 top-0 w-full bg-red-500 h-[100px]'}></div>
+			<div className={'left-0 top-0 w-full h-[100px]'} style={{backgroundColor: colourBasedOnId}}></div>
 
 			{/*header*/}
 			<div className={'flex flex-col gap-4 translate-y-[-50px]'}>

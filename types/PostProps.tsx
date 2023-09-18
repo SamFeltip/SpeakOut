@@ -5,6 +5,7 @@ export type PostProps = {
 		name: string;
 		email: string;
 		image: string;
+		id: string;
 	} | null;
 	content: string;
 	published: boolean;

@@ -32,16 +32,15 @@ const Post: React.FC<{ post: PostProps }> = ({post}) => {
 		<div className={"pb-2" + (post?.replyPost ? " pl-5" : "")}>
 			<div
 				className={`flex flex-row items-center gap-2 rounded bg-white py-3 hover:cursor-pointer `}
-				onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}
 			>
 				<img
+					onClick={ () => Router.push("/user/" + post.author.id)}
 					src={post.author?.image ?? ""}
 					alt={post.author?.name ?? ""}
 					className={"rounded-full h-[48px] w-[48px]"}
 					referrerPolicy={"no-referrer"}
 				/>
-
-				<div>
+				<div onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}>
 					<h2 className={'font-bold'}>{post.title}</h2>
 					<small>By {authorName}</small>
 					<ReactMarkdown children={post.content} />
